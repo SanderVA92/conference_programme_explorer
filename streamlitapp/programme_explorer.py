@@ -5,6 +5,7 @@ import data.load as data_loader
 import data.filter as data_filter
 import data.utils as data_utils
 from config import AppConfig
+from optimizer.max_session_utility import MaximizeSessionAttendanceUtility
 
 st.set_page_config(layout="wide")
 
@@ -82,6 +83,14 @@ def conference_browsing_tab(df_complete_programme: pd.DataFrame, **kwargs) -> No
         display_all_selected_abstracts(df_filtered, programme_table_events.selection)
 
 
+def get_optimal_set_of_sessions(df_programme: pd.DataFrame) -> pd.DataFrame:
+    opt_model = MaximizeSessionAttendanceUtility.create_base_session_level_model(df_programme)
+    opt_model.solve()
+
+    selected_session = opt_model.get_optimal_session_attendance()
+    df_selected_sessions = pd.DataFrame(selected_session).sort_values(by=["Timeslot"])
+    return df_selected_sessions
+
 def schedule_optimizer_tab(df_complete_programme: pd.DataFrame, **kwargs) -> None:
     container = kwargs.get('container', st)
 
@@ -96,6 +105,14 @@ def schedule_optimizer_tab(df_complete_programme: pd.DataFrame, **kwargs) -> Non
             The decision then comes down to select the best possible set of sessions out of the
             available one such that we have at most one session per timeslot.
         """)
+
+        df_selected_sessions = get_optimal_set_of_sessions(df_complete_programme)
+        st.dataframe(
+            df_selected_sessions,
+            column_order=["Schedule", "Stream Name", "Track Code", "Session Name", "Title"],
+            hide_index=True
+        )
+
 
 
 def main() -> None:
