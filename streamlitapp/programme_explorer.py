@@ -34,6 +34,11 @@ def display_text_based_filters() -> None:
     col_text_filters[1].text_input("Search in abstract ...", key="abstract_search")
 
 
+def display_optimization_model_filters(df_programme: pd.DataFrame) -> None:
+    all_streams = data_utils.get_unique_streams(df_programme, filter_by_state=False)
+    st.multiselect("Restrict to streams", options=all_streams, key="opt_selected_stream")
+
+
 def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events: st_event_utils.AttributeDictionary) -> None:
     selected_rows = selection_events['rows']
 
@@ -91,6 +96,7 @@ def get_optimal_set_of_sessions(df_programme: pd.DataFrame) -> pd.DataFrame:
     df_selected_sessions = pd.DataFrame(selected_session).sort_values(by=["Timeslot"])
     return df_selected_sessions
 
+
 def schedule_optimizer_tab(df_complete_programme: pd.DataFrame, **kwargs) -> None:
     container = kwargs.get('container', st)
 
@@ -106,13 +112,15 @@ def schedule_optimizer_tab(df_complete_programme: pd.DataFrame, **kwargs) -> Non
             available one such that we have at most one session per timeslot.
         """)
 
-        df_selected_sessions = get_optimal_set_of_sessions(df_complete_programme)
+        display_optimization_model_filters(df_complete_programme)
+        df_available_programme = data_filter.filter_optimization_input_based_on_state(df_complete_programme)
+
+        df_selected_sessions = get_optimal_set_of_sessions(df_available_programme)
         st.dataframe(
             df_selected_sessions,
             column_order=["Schedule", "Stream Name", "Track Code", "Session Name", "Title"],
             hide_index=True
         )
-
 
 
 def main() -> None:

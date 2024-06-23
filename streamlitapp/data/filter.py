@@ -39,3 +39,14 @@ def filter_programme_based_on_state(df_programme: pd.DataFrame) -> pd.DataFrame:
         ]
 
     return df_filtered
+
+
+def filter_optimization_input_based_on_state(df_programme: pd.DataFrame) -> pd.DataFrame:
+    df_filtered = df_programme.copy()
+
+    # Ensure that the filters are applied. We can extract the filters from the session state
+    flt_streams = st.session_state.get("opt_selected_stream", [])
+    if len(flt_streams) > 0:
+        df_filtered = df_filtered[df_filtered["Stream Name"].isin(flt_streams)]
+
+    return df_filtered
