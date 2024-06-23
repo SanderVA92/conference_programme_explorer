@@ -24,3 +24,12 @@ def get_unique_streams(df_programme: pd.DataFrame, filter_by_state: bool) -> lis
     unique_streams = df_filtered["Stream Name"].unique().tolist()
     unique_streams.sort()
     return unique_streams
+
+
+def get_preselected_streams(available_streams: list[str]) -> list[str]:
+    last_selected_streams = set(st.session_state.get("selected_streams", []))
+    remaining_streams = set(available_streams).intersection(last_selected_streams)
+    remaining_streams = list(remaining_streams)
+    remaining_streams.sort()
+
+    return remaining_streams

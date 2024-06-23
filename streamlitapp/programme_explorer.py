@@ -34,7 +34,8 @@ def main() -> None:
 
     # Add a stream filter to the page itself, in the column next to the timeslot filter
     potential_streams = data_utils.get_unique_streams(df_complete_programme, filter_by_state=True)
-    col_multiselect_filters[1].multiselect("Stream(s)", potential_streams, key="selected_streams")
+    preset_streams = data_utils.get_preselected_streams(potential_streams)
+    col_multiselect_filters[1].multiselect("Stream(s)", potential_streams, key="selected_streams", default=preset_streams)
 
     # Before the programme can be displayed, we need to filter it based on the user's selection, using the session state
     df_filtered = filter_programme_based_on_state(df_complete_programme)
