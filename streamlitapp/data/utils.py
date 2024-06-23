@@ -1,5 +1,9 @@
+import random
+
 import pandas as pd
 import streamlit as st
+
+random.seed(42)
 
 
 def get_unique_timeslots(df_programme: pd.DataFrame) -> list[str]:
@@ -43,3 +47,34 @@ def get_unique_keywords(df_programme: pd.DataFrame) -> list[str]:
     unique_keywords.sort()
 
     return unique_keywords
+
+
+
+
+def get_unique_sessions_for_optimization_model(df_programme: pd.DataFrame) -> list[str]:
+    df_filtered = df_programme.copy()
+
+    # Ensure that the relevant filters are applied. We can extract the filters from the session state
+    flt_streams = st.session_state.get("opt_selected_stream", [])
+    if len(flt_streams) > 0:
+        df_filtered = df_filtered[df_filtered["Stream Name"].isin(flt_streams)]
+
+    unique_streams = df_filtered["Session Name"].unique().tolist()
+    unique_streams.sort()
+    return unique_streams
+
+
+def get_preselected_sessions_for_optimization_model(available_sessions: list[str]) -> list[str]:
+    last_selected_sessions = set(st.session_state.get("must_attend_sessions", []))
+    remaining_sessions = set(available_sessions).intersection(last_selected_sessions)
+    remaining_sessions = list(remaining_sessions)
+    remaining_sessions.sort()
+
+    return remaining_sessions
+
+
+@st.cache_data
+def assign_random_utilities_to_programme_entries(df_programme: pd.DataFrame) -> pd.DataFrame:
+    # For illustration purposes, we will assign random utilities to the programme entries
+    df_programme["Utility"] = [round(10 * random.random(), 2) for _ in range(len(df_programme))]
+    return df_programme

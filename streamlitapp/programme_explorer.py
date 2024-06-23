@@ -5,6 +5,8 @@ import data.load as data_loader
 import data.filter as data_filter
 import data.utils as data_utils
 from config import AppConfig
+from optimizer.max_session_utility import MaximizeSessionAttendanceUtility, CannotRetrieveResultsException
+import components.calendar as calendar
 
 st.set_page_config(layout="wide")
 
@@ -33,6 +35,23 @@ def display_text_based_filters() -> None:
     col_text_filters[1].text_input("Search in abstract ...", key="abstract_search")
 
 
+def display_optimization_model_filters(df_programme: pd.DataFrame) -> None:
+    col_optimization_filters = st.columns(2)
+
+    all_streams = data_utils.get_unique_streams(df_programme, filter_by_state=False)
+
+    col_optimization_filters[0].multiselect("Restrict to streams", options=all_streams, key="opt_selected_stream")
+
+    all_sessions = data_utils.get_unique_sessions_for_optimization_model(df_programme)
+    preselected_sessions = data_utils.get_preselected_sessions_for_optimization_model(all_sessions)
+    col_optimization_filters[1].multiselect(
+        "Must-attend Sessions",
+        all_sessions,
+        default=preselected_sessions,
+        key="must_attend_sessions"
+    )
+
+
 def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events: st_event_utils.AttributeDictionary) -> None:
     selected_rows = selection_events['rows']
 
@@ -59,27 +78,89 @@ def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events:
     return
 
 
+def conference_browsing_tab(df_complete_programme: pd.DataFrame, **kwargs) -> None:
+    container = kwargs.get('container', st)
+
+    with container:
+        display_multiselect_filters(df_complete_programme)
+        display_text_based_filters()
+
+        # Before the programme can be displayed, we need to filter it based on the user's selection, using the session state
+        df_filtered = data_filter.filter_programme_based_on_state(df_complete_programme)
+
+        # Users should be able to select rows in the dataframe to display the requested abstracts. To do so at a later
+        # point, we need to capture the selection events. The on_select="rerun" setting will enable selections.
+        programme_table_events = st.dataframe(
+            df_filtered,
+            column_order=['Schedule', 'Track Code', 'Session Name', 'Title', 'Keywords'],
+            hide_index=True,
+            on_select="rerun",
+            selection_mode="multi-row",
+        )
+
+        display_all_selected_abstracts(df_filtered, programme_table_events.selection)
+
+
+def get_optimal_set_of_sessions(df_programme: pd.DataFrame) -> pd.DataFrame:
+    opt_model = MaximizeSessionAttendanceUtility.create_base_session_level_model(df_programme)
+
+    # Some of the sessions we just must attend, e.g. speaking at them. Hence, add them as fixed to the model
+    must_attend_sessions = st.session_state.get("must_attend_sessions", [])
+    opt_model.force_session_selection(must_attend_sessions)
+
+    opt_model.solve()
+
+    selected_session = opt_model.get_optimal_session_attendance()
+    df_selected_sessions = pd.DataFrame(selected_session).sort_values(by=["Timeslot"])
+    return df_selected_sessions
+
+
+def schedule_optimizer_tab(df_complete_programme: pd.DataFrame, **kwargs) -> None:
+    container = kwargs.get('container', st)
+
+    with container:
+        st.info("""
+            During a conference, we want to get the most out of attending different sessions. Hence,
+            we will integrate an optimization model which maximizes the total utility we get from
+            attending conference sessions. Note that we assume we do not want to swap rooms during
+            a session, and the mean utility of a session is the combined value of all talks included
+            in it.
+            
+            The decision then comes down to select the best possible set of sessions out of the
+            available one such that we have at most one session per timeslot.
+        """)
+
+        display_optimization_model_filters(df_complete_programme)
+        df_available_programme = data_filter.filter_optimization_input_based_on_state(df_complete_programme)
+
+        columns_result_display = st.columns(2)
+
+        try:
+            df_selected_sessions = get_optimal_set_of_sessions(df_available_programme)
+        except CannotRetrieveResultsException:
+            st.error("Could not retrieve results likely because of a conflict in must-attend sessions")
+            st.stop()
+
+        columns_result_display[0].dataframe(
+            df_selected_sessions,
+            column_order=["Schedule", "Stream Name", "Track Code", "Session Name", "Title", "Utility"],
+            hide_index=True
+        )
+
+        with columns_result_display[1]:
+            st.radio("Select view", calendar.available_calendar_views().keys(), key="calendar_view")
+            calendar.render_calendar_from_sessions(df_selected_sessions)
+
+
 def main() -> None:
     filepath_programme = AppConfig.FILEPATH_CONFERENCE_PROGRAMME
     df_complete_programme = data_loader.load_and_prepare_programme_data(filepath_programme)
+    df_complete_programme = data_utils.assign_random_utilities_to_programme_entries(df_complete_programme)
 
-    display_multiselect_filters(df_complete_programme)
-    display_text_based_filters()
+    main_page_tabs = st.tabs(['Browse Conference Programme', 'Optimize Your Schedule'])
 
-    # Before the programme can be displayed, we need to filter it based on the user's selection, using the session state
-    df_filtered = data_filter.filter_programme_based_on_state(df_complete_programme)
-
-    # Users should be able to select rows in the dataframe to display the requested abstracts. To do so at a later
-    # point, we need to capture the selection events. The on_select="rerun" setting will enable selections.
-    programme_table_events = st.dataframe(
-        df_filtered,
-        column_order=['Schedule', 'Track Code', 'Session Name', 'Title', 'Keywords'],
-        hide_index=True,
-        on_select="rerun",
-        selection_mode="multi-row",
-    )
-
-    display_all_selected_abstracts(df_filtered, programme_table_events.selection)
+    conference_browsing_tab(df_complete_programme, container=main_page_tabs[0])
+    schedule_optimizer_tab(df_complete_programme, container=main_page_tabs[1])
 
 
 if __name__ == '__main__':

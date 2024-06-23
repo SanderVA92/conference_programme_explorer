@@ -8,6 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 streamlit = "^1.36.0"
+pandas = "^2.2.2"
+pulp = "^2.8.0"
+streamlit-calendar = "^1.2.0"
 
 
 [build-system]
