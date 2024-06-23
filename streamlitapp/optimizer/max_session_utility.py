@@ -50,9 +50,7 @@ class MaximizeSessionAttendanceUtility:
 
     def get_optimal_session_attendance(self) -> list[dict[str, Any]]:
         if self.is_optimal() is False:
-            raise Exception(
-                f"Cannot retrieve results for model with status {self.__opt_model.status}"
-            )
+            raise CannotRetrieveResultsException.for_model_with_status(self.__opt_model.status)
 
         sessions_to_attend = []
         for session_id, session_details in self.__dict_session_details.items():
@@ -155,3 +153,10 @@ class MaximizeSessionAttendanceUtility:
 
         self.__ensure_session_attendance_constraints.extend(all_new_constraints)
         self.__add_constraints_to_model(all_new_constraints)
+
+
+class CannotRetrieveResultsException(Exception):
+
+    @classmethod
+    def for_model_with_status(cls, status: str) -> CannotRetrieveResultsException:
+        return cls(f"Cannot retrieve results for model with status {status}")

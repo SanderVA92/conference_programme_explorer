@@ -5,7 +5,7 @@ import data.load as data_loader
 import data.filter as data_filter
 import data.utils as data_utils
 from config import AppConfig
-from optimizer.max_session_utility import MaximizeSessionAttendanceUtility
+from optimizer.max_session_utility import MaximizeSessionAttendanceUtility, CannotRetrieveResultsException
 import components.calendar as calendar
 
 st.set_page_config(layout="wide")
@@ -135,7 +135,11 @@ def schedule_optimizer_tab(df_complete_programme: pd.DataFrame, **kwargs) -> Non
 
         columns_result_display = st.columns(2)
 
-        df_selected_sessions = get_optimal_set_of_sessions(df_available_programme)
+        try:
+            df_selected_sessions = get_optimal_set_of_sessions(df_available_programme)
+        except CannotRetrieveResultsException:
+            st.error("Could not retrieve results likely because of a conflict in must-attend sessions")
+            st.stop()
 
         columns_result_display[0].dataframe(
             df_selected_sessions,
