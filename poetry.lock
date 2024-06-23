@@ -981,6 +981,20 @@ watchdog = {version = ">=2.1.5,<5", markers = "platform_system != \"Darwin\""}
 snowflake = ["snowflake-connector-python (>=2.8.0)", "snowflake-snowpark-python (>=0.9.0)"]
 
 [[package]]
+name = "streamlit-calendar"
+version = "1.2.0"
+description = "📆 A Streamlit component to show callendar using FullCalendar (https://fullcalendar.io)"
+optional = false
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "streamlit_calendar-1.2.0-py3-none-any.whl", hash = "sha256:1d295e9d726d2ffd36bf8afdbf278a623f0cafa2eac3c45cdbdadb1e4d85dff7"},
+    {file = "streamlit_calendar-1.2.0.tar.gz", hash = "sha256:e43d763e58efef568b52838bde0817e13c1d1572fe558cf06932ae36d6485805"},
+]
+
+[package.dependencies]
+streamlit = ">=1.12.0,<2.0.0"
+
+[[package]]
 name = "tenacity"
 version = "8.4.1"
 description = "Retry code until it succeeds"
@@ -1123,4 +1137,4 @@ watchmedo = ["PyYAML (>=3.10)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "428d6d97a29280b5a15909022b6c721e2e1ddc8dc8ddd28312c643f36e0de02a"
+content-hash = "52c3f5441bcfd8bd930194d0f870111fd63f7328c42ae1858cf4c1b22141c388"
