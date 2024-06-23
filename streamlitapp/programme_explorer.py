@@ -15,6 +15,10 @@ def filter_programme_based_on_state(df_programme: pd.DataFrame) -> pd.DataFrame:
     if len(flt_timeslots) > 0:
         df_filtered = df_filtered[df_filtered["Schedule"].isin(flt_timeslots)]
 
+    flt_streams = st.session_state.get("selected_streams", [])
+    if len(flt_streams) > 0:
+        df_filtered = df_filtered[df_filtered["Stream Name"].isin(flt_streams)]
+
     return df_filtered
 
 
@@ -22,9 +26,15 @@ def main() -> None:
     filepath_programme = AppConfig.FILEPATH_CONFERENCE_PROGRAMME
     df_complete_programme = data_loader.load_and_prepare_programme_data(filepath_programme)
 
+    col_multiselect_filters = st.columns(2)
+
     # Add a timeslot filter to the page itself
     potential_timeslots = data_utils.get_unique_timeslots(df_complete_programme)
-    st.multiselect("Timeslot(s)", potential_timeslots, key="selected_timeslots")
+    col_multiselect_filters[0].multiselect("Timeslot(s)", potential_timeslots, key="selected_timeslots")
+
+    # Add a stream filter to the page itself, in the column next to the timeslot filter
+    potential_streams = data_utils.get_unique_streams(df_complete_programme, filter_by_state=True)
+    col_multiselect_filters[1].multiselect("Stream(s)", potential_streams, key="selected_streams")
 
     # Before the programme can be displayed, we need to filter it based on the user's selection, using the session state
     df_filtered = filter_programme_based_on_state(df_complete_programme)
