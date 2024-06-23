@@ -33,6 +33,8 @@ with main_page_tabs[1]:
     # that the random number generated here will be different on every reload.
     st.write(f"Random number: {random.randint(0, 100)}")
 
+    columns_on_input_tab = st.columns(2)
+
     # Streamlit reloads the page each time the user interacts with the input elements. Hence, this means
     # that we can also re-use some of the input provided. For example, we can use the provided text input
     # at an earlier stage in the application by collecting it from the `session_state`. Note that the `session_state`
@@ -41,11 +43,11 @@ with main_page_tabs[1]:
     st.write(f"Text input value: {text_input_value}")
 
     # We can capture the input provided by the user in a variable and as such use it later on.
-    number_input_value = st.number_input("Enter a positive number", value=1, min_value=0, step=1)
+    number_input_value = columns_on_input_tab[0].number_input("Enter a positive number", value=1, min_value=0, step=1)
 
     # To capture the provided user input and re-use it at other points in the app, we can set the `key` of
     # the input element and store the value in the `session_state`.
-    text_input_return = st.text_input("Enter some text", value=None, key="text_input_value")
+    text_input_return = columns_on_input_tab[1].text_input("Enter some text", value=None, key="text_input_value")
 
     st.write(f"Number input value: {number_input_value}")
     st.write(f"Text input value: {text_input_return}")
