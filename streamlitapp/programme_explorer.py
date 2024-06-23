@@ -6,6 +6,7 @@ import data.filter as data_filter
 import data.utils as data_utils
 from config import AppConfig
 from optimizer.max_session_utility import MaximizeSessionAttendanceUtility
+import components.calendar as calendar
 
 st.set_page_config(layout="wide")
 
@@ -132,12 +133,19 @@ def schedule_optimizer_tab(df_complete_programme: pd.DataFrame, **kwargs) -> Non
         display_optimization_model_filters(df_complete_programme)
         df_available_programme = data_filter.filter_optimization_input_based_on_state(df_complete_programme)
 
+        columns_result_display = st.columns(2)
+
         df_selected_sessions = get_optimal_set_of_sessions(df_available_programme)
-        st.dataframe(
+
+        columns_result_display[0].dataframe(
             df_selected_sessions,
             column_order=["Schedule", "Stream Name", "Track Code", "Session Name", "Title", "Utility"],
             hide_index=True
         )
+
+        with columns_result_display[1]:
+            st.radio("Select view", calendar.available_calendar_views().keys(), key="calendar_view")
+            calendar.render_calendar_from_sessions(df_selected_sessions)
 
 
 def main() -> None:
