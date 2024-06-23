@@ -33,6 +33,8 @@ def get_preselected_streams(available_streams: list[str]) -> list[str]:
     remaining_streams.sort()
 
     return remaining_streams
+
+
 def get_unique_keywords(df_programme: pd.DataFrame) -> list[str]:
     # We do not want to pre-filter the keywords as there is not really a hierarchical structure
     stacked_keywords = df_programme["Keywords"].apply(pd.Series).stack()
