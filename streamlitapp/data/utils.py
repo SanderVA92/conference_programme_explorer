@@ -1,5 +1,9 @@
+import random
+
 import pandas as pd
 import streamlit as st
+
+random.seed(42)
 
 
 def get_unique_timeslots(df_programme: pd.DataFrame) -> list[str]:
@@ -43,3 +47,10 @@ def get_unique_keywords(df_programme: pd.DataFrame) -> list[str]:
     unique_keywords.sort()
 
     return unique_keywords
+
+
+@st.cache_data
+def assign_random_utilities_to_programme_entries(df_programme: pd.DataFrame) -> pd.DataFrame:
+    # For illustration purposes, we will assign random utilities to the programme entries
+    df_programme["Utility"] = [round(10 * random.random(), 2) for _ in range(len(df_programme))]
+    return df_programme

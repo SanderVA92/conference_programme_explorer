@@ -101,6 +101,7 @@ def schedule_optimizer_tab(df_complete_programme: pd.DataFrame, **kwargs) -> Non
 def main() -> None:
     filepath_programme = AppConfig.FILEPATH_CONFERENCE_PROGRAMME
     df_complete_programme = data_loader.load_and_prepare_programme_data(filepath_programme)
+    df_complete_programme = data_utils.assign_random_utilities_to_programme_entries(df_complete_programme)
 
     main_page_tabs = st.tabs(['Browse Conference Programme', 'Optimize Your Schedule'])
 
