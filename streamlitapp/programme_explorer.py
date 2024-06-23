@@ -25,11 +25,19 @@ def display_multiselect_filters(df_programme: pd.DataFrame) -> None:
     col_multiselect_filters[2].multiselect("Keyword(s)", potential_keywords, key="selected_keywords")
 
 
+def display_text_based_filters() -> None:
+    col_text_filters = st.columns(2)
+
+    col_text_filters[0].text_input("Search in title ...", key="title_search")
+    col_text_filters[1].text_input("Search in abstract ...", key="abstract_search")
+
+
 def main() -> None:
     filepath_programme = AppConfig.FILEPATH_CONFERENCE_PROGRAMME
     df_complete_programme = data_loader.load_and_prepare_programme_data(filepath_programme)
 
     display_multiselect_filters(df_complete_programme)
+    display_text_based_filters()
 
     # Before the programme can be displayed, we need to filter it based on the user's selection, using the session state
     df_filtered = data_filter.filter_programme_based_on_state(df_complete_programme)

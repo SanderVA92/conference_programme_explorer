@@ -26,4 +26,16 @@ def filter_programme_based_on_state(df_programme: pd.DataFrame) -> pd.DataFrame:
             df_filtered["Keywords"].apply(lambda x: has_overlapping_keywords(x, flt_keywords))
         ]
 
+    title_text_search = st.session_state.get("title_search", '')
+    if title_text_search.strip(' ') != '':
+        df_filtered = df_filtered[
+            df_filtered["Title"].str.contains(title_text_search, case=False)
+        ]
+
+    abstract_text_search = st.session_state.get("abstract_search", '')
+    if abstract_text_search.strip(' ') != '':
+        df_filtered = df_filtered[
+            df_filtered["Abstract"].str.contains(abstract_text_search, case=False)
+        ]
+
     return df_filtered
