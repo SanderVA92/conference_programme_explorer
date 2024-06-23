@@ -42,7 +42,13 @@ def display_optimization_model_filters(df_programme: pd.DataFrame) -> None:
     col_optimization_filters[0].multiselect("Restrict to streams", options=all_streams, key="opt_selected_stream")
 
     all_sessions = data_utils.get_unique_sessions_for_optimization_model(df_programme)
-    col_optimization_filters[1].multiselect("Must-attend Sessions", all_sessions, key="must_attend_sessions")
+    preselected_sessions = data_utils.get_preselected_sessions_for_optimization_model(all_sessions)
+    col_optimization_filters[1].multiselect(
+        "Must-attend Sessions",
+        all_sessions,
+        default=preselected_sessions,
+        key="must_attend_sessions"
+    )
 
 
 def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events: st_event_utils.AttributeDictionary) -> None:
@@ -129,7 +135,7 @@ def schedule_optimizer_tab(df_complete_programme: pd.DataFrame, **kwargs) -> Non
         df_selected_sessions = get_optimal_set_of_sessions(df_available_programme)
         st.dataframe(
             df_selected_sessions,
-            column_order=["Schedule", "Stream Name", "Track Code", "Session Name", "Title"],
+            column_order=["Schedule", "Stream Name", "Track Code", "Session Name", "Title", "Utility"],
             hide_index=True
         )
 

@@ -49,6 +49,8 @@ def get_unique_keywords(df_programme: pd.DataFrame) -> list[str]:
     return unique_keywords
 
 
+
+
 def get_unique_sessions_for_optimization_model(df_programme: pd.DataFrame) -> list[str]:
     df_filtered = df_programme.copy()
 
@@ -60,6 +62,15 @@ def get_unique_sessions_for_optimization_model(df_programme: pd.DataFrame) -> li
     unique_streams = df_filtered["Session Name"].unique().tolist()
     unique_streams.sort()
     return unique_streams
+
+
+def get_preselected_sessions_for_optimization_model(available_sessions: list[str]) -> list[str]:
+    last_selected_sessions = set(st.session_state.get("must_attend_sessions", []))
+    remaining_sessions = set(available_sessions).intersection(last_selected_sessions)
+    remaining_sessions = list(remaining_sessions)
+    remaining_sessions.sort()
+
+    return remaining_sessions
 
 
 @st.cache_data
