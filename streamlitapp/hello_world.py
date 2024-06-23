@@ -49,5 +49,8 @@ with main_page_tabs[1]:
     # the input element and store the value in the `session_state`.
     text_input_return = columns_on_input_tab[1].text_input("Enter some text", value=None, key="text_input_value")
 
-    st.write(f"Number input value: {number_input_value}")
-    st.write(f"Text input value: {text_input_return}")
+    # To hide information, we can use the `expander` widget. This allows the user to expand and collapse the content
+    # based on their needs
+    expander = st.expander("Your provided input")
+    expander.write(f"Number input value: {number_input_value}")
+    expander.write(f"Text input value: {text_input_return}")
