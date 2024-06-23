@@ -10,3 +10,5 @@ class AppConfig:
     CONFERENCE_PROGRAMME_LINK = "https://euro2024cph.dk/programme/conference-program"
 
     FILEPATH_CONFERENCE_PROGRAMME: str = os.path.join(DATASET_DIR, FILENAME_CONFERENCE_PROGRAMME)
+
+    ABSTRACT_DISPLAY_LIMIT: int = 10

@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import streamlit.elements.lib.event_utils as st_event_utils
 import data.load as data_loader
 import data.filter as data_filter
 import data.utils as data_utils
@@ -32,6 +33,32 @@ def display_text_based_filters() -> None:
     col_text_filters[1].text_input("Search in abstract ...", key="abstract_search")
 
 
+def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events: st_event_utils.AttributeDictionary) -> None:
+    selected_rows = selection_events['rows']
+
+    if len(selected_rows) == 0:
+        st.info("No abstracts selected to display. Please select in the table above.")
+        return
+
+    st.write(f'Selected {len(selected_rows)} talks in the programme')
+
+    limit = AppConfig.ABSTRACT_DISPLAY_LIMIT
+    if len(selected_rows) > limit:
+        st.error(
+            f"Too many abstracts to display. Please refine your selection to at most {limit} abstracts."
+        )
+        return
+
+    df_selected_abstracts = df_programme.iloc[selected_rows]
+
+    for index, record in df_selected_abstracts.iterrows():
+        title = f"{record['Schedule']}\t-\t {record['Title']}\t({record['Track Code']})"
+        expander = st.expander(title, expanded=False)
+        expander.write(record["Abstract"])
+
+    return
+
+
 def main() -> None:
     filepath_programme = AppConfig.FILEPATH_CONFERENCE_PROGRAMME
     df_complete_programme = data_loader.load_and_prepare_programme_data(filepath_programme)
@@ -52,7 +79,7 @@ def main() -> None:
         selection_mode="multi-row",
     )
 
-    st.write(programme_table_events)
+    display_all_selected_abstracts(df_filtered, programme_table_events.selection)
 
 
 if __name__ == '__main__':
