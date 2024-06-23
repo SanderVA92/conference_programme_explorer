@@ -42,11 +42,17 @@ def main() -> None:
     # Before the programme can be displayed, we need to filter it based on the user's selection, using the session state
     df_filtered = data_filter.filter_programme_based_on_state(df_complete_programme)
 
-    st.dataframe(
+    # Users should be able to select rows in the dataframe to display the requested abstracts. To do so at a later
+    # point, we need to capture the selection events. The on_select="rerun" setting will enable selections.
+    programme_table_events = st.dataframe(
         df_filtered,
         column_order=['Schedule', 'Track Code', 'Session Name', 'Title', 'Keywords'],
-        hide_index=True
+        hide_index=True,
+        on_select="rerun",
+        selection_mode="multi-row",
     )
+
+    st.write(programme_table_events)
 
 
 if __name__ == '__main__':
