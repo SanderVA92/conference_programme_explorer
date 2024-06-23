@@ -35,8 +35,14 @@ def display_text_based_filters() -> None:
 
 
 def display_optimization_model_filters(df_programme: pd.DataFrame) -> None:
+    col_optimization_filters = st.columns(2)
+
     all_streams = data_utils.get_unique_streams(df_programme, filter_by_state=False)
-    st.multiselect("Restrict to streams", options=all_streams, key="opt_selected_stream")
+
+    col_optimization_filters[0].multiselect("Restrict to streams", options=all_streams, key="opt_selected_stream")
+
+    all_sessions = data_utils.get_unique_sessions_for_optimization_model(df_programme)
+    col_optimization_filters[1].multiselect("Must-attend Sessions", all_sessions, key="must_attend_sessions")
 
 
 def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events: st_event_utils.AttributeDictionary) -> None:
@@ -90,6 +96,11 @@ def conference_browsing_tab(df_complete_programme: pd.DataFrame, **kwargs) -> No
 
 def get_optimal_set_of_sessions(df_programme: pd.DataFrame) -> pd.DataFrame:
     opt_model = MaximizeSessionAttendanceUtility.create_base_session_level_model(df_programme)
+
+    # Some of the sessions we just must attend, e.g. speaking at them. Hence, add them as fixed to the model
+    must_attend_sessions = st.session_state.get("must_attend_sessions", [])
+    opt_model.force_session_selection(must_attend_sessions)
+
     opt_model.solve()
 
     selected_session = opt_model.get_optimal_session_attendance()

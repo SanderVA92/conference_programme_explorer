@@ -13,6 +13,7 @@ class MaximizeSessionAttendanceUtility:
     __dict_session_attendance_variables: dict[str, pulp.LpBinary] = {}
 
     __at_most_one_session_per_slot_constraints: list[pulp.LpConstraint] = []
+    __ensure_session_attendance_constraints: list[pulp.LpConstraint] = []
 
     def __init__(self, dict_sessions: dict[str, dict[str, Any]]) -> None:
         self.__dict_session_details = dict_sessions
@@ -126,7 +127,7 @@ class MaximizeSessionAttendanceUtility:
             raise KeyError(f"Missing columns {missing_columns_str} in DataFrame")
 
         df_session_level_utility = (
-            df_potential_talks[columns_to_keep].groupby(by=session_level_columns).mean()
+            df_potential_talks[columns_to_keep].groupby(by=session_level_columns).mean().round(decimals=2)
         )
         df_session_level_utility.reset_index(inplace=True)
         df_session_level_utility.set_index("Session", inplace=True)
@@ -137,3 +138,18 @@ class MaximizeSessionAttendanceUtility:
     ) -> None:
         for constraint in all_constraints:
             self.__opt_model.addConstraint(constraint, constraint.name)
+
+    def force_session_selection(self, list_of_sessions: list[str]) -> None:
+        all_new_constraints = []
+        for session_id, session_details in self.__dict_session_details.items():
+            session_variable = self.__dict_session_attendance_variables[session_id]
+            if session_details["Session Name"] not in list_of_sessions:
+                continue
+
+            new_constraint = pulp.LpConstraint(
+                session_variable, sense=pulp.LpConstraintEQ, rhs=1
+            )
+            all_new_constraints.append(new_constraint)
+
+        self.__ensure_session_attendance_constraints.extend(all_new_constraints)
+        self.__add_constraints_to_model(all_new_constraints)

@@ -49,6 +49,19 @@ def get_unique_keywords(df_programme: pd.DataFrame) -> list[str]:
     return unique_keywords
 
 
+def get_unique_sessions_for_optimization_model(df_programme: pd.DataFrame) -> list[str]:
+    df_filtered = df_programme.copy()
+
+    # Ensure that the relevant filters are applied. We can extract the filters from the session state
+    flt_streams = st.session_state.get("opt_selected_stream", [])
+    if len(flt_streams) > 0:
+        df_filtered = df_filtered[df_filtered["Stream Name"].isin(flt_streams)]
+
+    unique_streams = df_filtered["Session Name"].unique().tolist()
+    unique_streams.sort()
+    return unique_streams
+
+
 @st.cache_data
 def assign_random_utilities_to_programme_entries(df_programme: pd.DataFrame) -> pd.DataFrame:
     # For illustration purposes, we will assign random utilities to the programme entries
