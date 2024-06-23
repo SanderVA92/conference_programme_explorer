@@ -47,7 +47,7 @@ def load_and_prepare_programme_data(filepath: str) -> pd.DataFrame:
     # Rename columns for better readability
     col_name_mapping = {
         col_name: col_name.replace("_", " ").title()
-        for col_name in expected_columns
+        for col_name in df_programme.columns
     }
     df_programme.rename(columns=col_name_mapping, inplace=True)
 

@@ -117,6 +117,8 @@ class MaximizeSessionAttendanceUtility:
             "Stream",
             "Timeslot",
             "Schedule",
+            "Start Timestamp",
+            "End Timestamp",
         ]
         utility_column = "Utility"
 
