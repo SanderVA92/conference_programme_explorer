@@ -54,14 +54,14 @@ def display_optimization_model_filters(df_programme: pd.DataFrame) -> None:
 
 def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events: st_event_utils.AttributeDictionary) -> None:
     selected_rows = selection_events['rows']
+    limit = AppConfig.ABSTRACT_DISPLAY_LIMIT
 
     if len(selected_rows) == 0:
-        st.info("No abstracts selected to display. Please select in the table above.")
+        st.info(f"No abstracts selected to display. Please select at most {limit} rows in the table above.")
         return
 
-    st.write(f'Selected {len(selected_rows)} talks in the programme')
+    st.write(f'Selected {len(selected_rows)} talks in the programme. Click on the title to show the abstract.')
 
-    limit = AppConfig.ABSTRACT_DISPLAY_LIMIT
     if len(selected_rows) > limit:
         st.error(
             f"Too many abstracts to display. Please refine your selection to at most {limit} abstracts."
@@ -90,6 +90,7 @@ def conference_browsing_tab(df_complete_programme: pd.DataFrame, **kwargs) -> No
 
         # Users should be able to select rows in the dataframe to display the requested abstracts. To do so at a later
         # point, we need to capture the selection events. The on_select="rerun" setting will enable selections.
+        st.write(":arrow_down: Select rows to display the abstracts below the table.")
         programme_table_events = st.dataframe(
             df_filtered,
             column_order=['Schedule', 'Track Code', 'Session Name', 'Title', 'Keywords'],
