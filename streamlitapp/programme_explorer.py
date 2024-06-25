@@ -158,10 +158,16 @@ def main() -> None:
     df_complete_programme = data_loader.load_and_prepare_programme_data(filepath_programme)
     df_complete_programme = data_utils.assign_random_utilities_to_programme_entries(df_complete_programme)
 
-    main_page_tabs = st.tabs(['Browse Conference Programme', 'Optimize Your Schedule'])
+    all_tabs_to_show = ['Browse Conference Programme']
+    if AppConfig.SHOW_OPTIMIZATION_TAB:
+        all_tabs_to_show = ['Browse Conference Programme', 'Optimize Your Schedule']
+
+    main_page_tabs = st.tabs(all_tabs_to_show)
 
     conference_browsing_tab(df_complete_programme, container=main_page_tabs[0])
-    schedule_optimizer_tab(df_complete_programme, container=main_page_tabs[1])
+
+    if AppConfig.SHOW_OPTIMIZATION_TAB:
+        schedule_optimizer_tab(df_complete_programme, container=main_page_tabs[1])
 
 
 if __name__ == '__main__':

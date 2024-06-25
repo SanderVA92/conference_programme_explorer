@@ -1,4 +1,6 @@
+import ast
 import os
+import streamlit as st
 
 
 class AppConfig:
@@ -12,3 +14,7 @@ class AppConfig:
     FILEPATH_CONFERENCE_PROGRAMME: str = os.path.join(DATASET_DIR, FILENAME_CONFERENCE_PROGRAMME)
 
     ABSTRACT_DISPLAY_LIMIT: int = 10
+
+    SHOW_OPTIMIZATION_TAB: bool = ast.literal_eval(
+        st.secrets.get("feature_toggles", "False").get("show_optimization_tab", "False")
+    )
