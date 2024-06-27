@@ -15,6 +15,5 @@ class AppConfig:
 
     ABSTRACT_DISPLAY_LIMIT: int = 10
 
-    SHOW_OPTIMIZATION_TAB: bool = ast.literal_eval(
-        st.secrets.get("feature_toggles", "False").get("show_optimization_tab", "False")
-    )
+    __FEATURE_TOGGLES: dict[str, str] = st.secrets.get("feature_toggles", {})
+    SHOW_OPTIMIZATION_TAB: bool = ast.literal_eval(__FEATURE_TOGGLES.get("show_optimization_tab", "False"))
