@@ -29,7 +29,7 @@ def filter_programme_based_on_state(df_programme: pd.DataFrame) -> pd.DataFrame:
     title_text_search = st.session_state.get("title_search", '')
     if title_text_search.strip(' ') != '':
         df_filtered = df_filtered[
-            df_filtered["Title"].str.contains(title_text_search, case=False)
+            df_filtered["Contribution Title"].str.contains(title_text_search, case=False)
         ]
 
     abstract_text_search = st.session_state.get("abstract_search", '')

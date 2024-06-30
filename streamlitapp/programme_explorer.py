@@ -91,7 +91,7 @@ def conference_browsing_tab(df_complete_programme: pd.DataFrame, **kwargs) -> No
         st.write(":arrow_down: Select rows to display the abstracts below the table.")
         programme_table_events = st.dataframe(
             df_filtered,
-            column_order=['Schedule', 'Session Name', 'Contribution Title', 'Track Code', 'Keywords'],
+            column_order=['Schedule', 'Session Name', 'Contribution Title', 'Track Code', 'Stream Name', 'Keywords'],
             hide_index=True,
             on_select="rerun",
             selection_mode="multi-row",
