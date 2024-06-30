@@ -34,17 +34,17 @@ poetry install
 ```
 
 ### 3. Running the app
+Create a `.streamlit/secrets.toml` file and add the following content:
+```
+[feature_toggles]
+show_optimization_tab = 'False'
+```
+
 To run your app locally, you can launch it from the terminal.
 ```
 streamlit run streamlitapp/programme_explorer.py
 ```
 
-Want to show the optimization tab and play around with it? You can manage this by means of a feature toggle stored. For that, create a `.streamlit/secrets.toml` file and add the following content:
-
-```
-[feature_toggles]
-show_optimization_tab = 'False'
-```
 
 </details>
 
