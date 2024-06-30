@@ -1,18 +1,58 @@
-# Streamlit tutorial - EURO2024 conference programme explorer
-## Goal 
+# EURO2024 conference programme explorer
+_Material initially developed as part of a `streamlit` tutorial at the [EURO conference in Copenhagen](https://euro2024cph.dk/)_
 
-- Show-casing the ease of developing interactive web app with `streamlit`
-- Introductory and easy-to-follow tutorial material
+➡️ Feedback, or want to get in touch? [![Linkedin](https://i.sstatic.net/gVE0j.png) LinkedIn](https://www.linkedin.com/in/sander-van-aken/)
+
+➡️ Check the final result here: [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)]([https://calendar-component.streamlit.app/](https://tinyurl.com/EURO2024-streamlit))
+
+➡️ Original presentation can be found [here](docs/MAI at EURO 2024 - Streamlit.pdf)
+
+## Goal of this repo
+
+- Show-casing the **ease of developing interactive web apps** with `streamlit`
+- Introductory and easy-to-follow tutorial material (see section below)
 - Building an interactive conference programme exploring app for the [33rd European Conference on Operational Research (EURO 2024)](https://euro2024cph.dk/)
 - Integrating a user-guided operations research model in a web app
 
-Want to check out the resulting web-app? Check out: https://conference-programme-explorer-demo.streamlit.app/
+## Running the app locally
 
-:construction: This README.md is still under construction :construction: 
+<details>
+  <summary>Click for instructions</summary>
+  
 
+### 1. Setup
+First, clone the repository:
+
+```
+git clone https://github.com/conference_programme_explorer.git
+cd conference_programme_explorer
+```
+
+### 2. Install the required dependencies
+For this project, `poetry` is used as a package manager. More information, including installation instructions - on the [project's website](https://python-poetry.org/docs/)
+
+```
+poetry install
+```
+
+### 3. Running the app
+To run your app locally, you can launch it from the terminal.
+```
+streamlit run streamlitapp/programme_explorer.py
+```
+
+Want to show the optimization tab and play around with it? You can manage this by means of a feature toggle stored. For that, create a `.streamlit/secrets.toml` file and add the following content:
+
+```
+[feature_toggles]
+show_optimization_tab = 'False'
+```
+
+</details>
 
 ## Tutorial - topic-wise introduction
 :notebook: Want to have a look at how you can build interactive `streamlit` apps step-by-step? 
+
 Browse through the commits of the pull requests linked below :idea:
 
 - [Hello World and basic app development](https://github.com/SanderVA92/conference_programme_explorer/pull/2)
@@ -35,8 +75,3 @@ Browse through the commits of the pull requests linked below :idea:
   - Integration of the basic model in a separate tab
   - Functionality to allow **user-guided optimization**
   - [`streamlit-calendar`](https://github.com/im-perativa/streamlit-calendar) integration
-
-
-## To-do / will come soonish
-
-- [ ] Add slides from tutorial presentation
