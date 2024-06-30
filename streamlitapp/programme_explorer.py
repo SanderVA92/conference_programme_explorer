@@ -10,29 +10,28 @@ import components.calendar as calendar
 
 st.set_page_config(layout="wide")
 
-
 def display_multiselect_filters(df_programme: pd.DataFrame) -> None:
-    col_multiselect_filters = st.columns(3)
+    # col_multiselect_filters = st.columns(3)
 
     # Add a timeslot filter to the page itself
     potential_timeslots = data_utils.get_unique_timeslots(df_programme)
-    col_multiselect_filters[0].multiselect("Timeslot(s)", potential_timeslots, key="selected_timeslots")
+    st.multiselect("Timeslot(s)", potential_timeslots, key="selected_timeslots")
 
     # Add a stream filter to the page itself, in the column next to the timeslot filter
     potential_streams = data_utils.get_unique_streams(df_programme, filter_by_state=True)
     preset_streams = data_utils.get_preselected_streams(potential_streams)
-    col_multiselect_filters[1].multiselect("Stream(s)", potential_streams, key="selected_streams", default=preset_streams)
+    st.multiselect("Stream(s)", potential_streams, key="selected_streams", default=preset_streams)
 
     # Add a keywords filter to the page itself
     potential_keywords = data_utils.get_unique_keywords(df_programme)
-    col_multiselect_filters[2].multiselect("Keyword(s)", potential_keywords, key="selected_keywords")
+    st.multiselect("Keyword(s)", potential_keywords, key="selected_keywords")
 
 
 def display_text_based_filters() -> None:
     col_text_filters = st.columns(2)
 
-    col_text_filters[0].text_input("Search in title ...", key="title_search")
-    col_text_filters[1].text_input("Search in abstract ...", key="abstract_search")
+    st.text_input("Search in title ...", key="title_search")
+    st.text_input("Search in abstract ...", key="abstract_search")
 
 
 def display_optimization_model_filters(df_programme: pd.DataFrame) -> None:
@@ -71,8 +70,10 @@ def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events:
     df_selected_abstracts = df_programme.iloc[selected_rows]
 
     for index, record in df_selected_abstracts.iterrows():
-        title = f"{record['Schedule']}\t-\t {record['Title']}\t({record['Track Code']})"
-        expander = st.expander(title, expanded=False)
+        exp_title = f"{record['Contribution Title']} ({record['Track Code']})"
+        expander = st.expander(rf'**{exp_title}**', expanded=False)
+        # expander.markdown(f"**{record['Contribution Title']}**")
+        expander.write(f"_Room {record['Room']} - {record['Schedule']}_")
         expander.write(record["Abstract"])
 
     return
@@ -82,9 +83,6 @@ def conference_browsing_tab(df_complete_programme: pd.DataFrame, **kwargs) -> No
     container = kwargs.get('container', st)
 
     with container:
-        display_multiselect_filters(df_complete_programme)
-        display_text_based_filters()
-
         # Before the programme can be displayed, we need to filter it based on the user's selection, using the session state
         df_filtered = data_filter.filter_programme_based_on_state(df_complete_programme)
 
@@ -93,7 +91,7 @@ def conference_browsing_tab(df_complete_programme: pd.DataFrame, **kwargs) -> No
         st.write(":arrow_down: Select rows to display the abstracts below the table.")
         programme_table_events = st.dataframe(
             df_filtered,
-            column_order=['Schedule', 'Track Code', 'Session Name', 'Title', 'Keywords'],
+            column_order=['Schedule', 'Session Name', 'Contribution Title', 'Track Code', 'Keywords'],
             hide_index=True,
             on_select="rerun",
             selection_mode="multi-row",
@@ -163,6 +161,11 @@ def main() -> None:
         all_tabs_to_show = ['Browse Conference Programme', 'Optimize Your Schedule']
 
     main_page_tabs = st.tabs(all_tabs_to_show)
+
+    with st.sidebar:
+        display_multiselect_filters(df_complete_programme)
+
+        display_text_based_filters()
 
     conference_browsing_tab(df_complete_programme, container=main_page_tabs[0])
 

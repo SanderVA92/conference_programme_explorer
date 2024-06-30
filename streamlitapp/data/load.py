@@ -22,6 +22,7 @@ def load_and_prepare_programme_data(filepath: str) -> pd.DataFrame:
         "paper_id": int,
         "title": str,
         "abstract": str,
+        "room": str,
     }
     expected_columns = list(expected_column_types.keys()) + list_typed_columns + date_typed_columns
 
@@ -49,6 +50,8 @@ def load_and_prepare_programme_data(filepath: str) -> pd.DataFrame:
         col_name: col_name.replace("_", " ").title()
         for col_name in df_programme.columns
     }
+    col_name_mapping['title'] = 'Contribution Title'
+
     df_programme.rename(columns=col_name_mapping, inplace=True)
 
     return df_programme
