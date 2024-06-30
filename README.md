@@ -22,7 +22,7 @@ _Material initially developed as part of a `streamlit` tutorial at the [EURO con
 First, clone the repository:
 
 ```
-git clone https://github.com/conference_programme_explorer.git
+git clone https://github.com/SanderVA92/conference_programme_explorer.git
 cd conference_programme_explorer
 ```
 
