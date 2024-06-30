@@ -71,8 +71,10 @@ def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events:
     df_selected_abstracts = df_programme.iloc[selected_rows]
 
     for index, record in df_selected_abstracts.iterrows():
-        title = f"{record['Schedule']}\t-\t {record['Title']}\t({record['Track Code']})"
+        title = f"{record['Schedule']}\t-\t {record['Contribution Title']}\t({record['Track Code']} - {record['Room']})"
         expander = st.expander(title, expanded=False)
+        expander.markdown(f"**{record['Contribution Title']}**")
+        expander.write(f"_Room {record['Room']}_")
         expander.write(record["Abstract"])
 
     return
@@ -82,7 +84,6 @@ def conference_browsing_tab(df_complete_programme: pd.DataFrame, **kwargs) -> No
     container = kwargs.get('container', st)
 
     with container:
-
         # Before the programme can be displayed, we need to filter it based on the user's selection, using the session state
         df_filtered = data_filter.filter_programme_based_on_state(df_complete_programme)
 
@@ -91,7 +92,7 @@ def conference_browsing_tab(df_complete_programme: pd.DataFrame, **kwargs) -> No
         st.write(":arrow_down: Select rows to display the abstracts below the table.")
         programme_table_events = st.dataframe(
             df_filtered,
-            column_order=['Schedule', 'Track Code', 'Session Name', 'Title', 'Keywords'],
+            column_order=['Schedule', 'Session Name', 'Contribution Title', 'Track Code', 'Keywords'],
             hide_index=True,
             on_select="rerun",
             selection_mode="multi-row",
