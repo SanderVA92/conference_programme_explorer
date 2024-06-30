@@ -10,7 +10,6 @@ import components.calendar as calendar
 
 st.set_page_config(layout="wide")
 
-
 def display_multiselect_filters(df_programme: pd.DataFrame) -> None:
     # col_multiselect_filters = st.columns(3)
 
@@ -71,10 +70,10 @@ def display_all_selected_abstracts(df_programme: pd.DataFrame, selection_events:
     df_selected_abstracts = df_programme.iloc[selected_rows]
 
     for index, record in df_selected_abstracts.iterrows():
-        title = f"{record['Schedule']}\t-\t {record['Contribution Title']}\t({record['Track Code']} - {record['Room']})"
-        expander = st.expander(title, expanded=False)
-        expander.markdown(f"**{record['Contribution Title']}**")
-        expander.write(f"_Room {record['Room']}_")
+        exp_title = f"{record['Contribution Title']} ({record['Track Code']})"
+        expander = st.expander(rf'**{exp_title}**', expanded=False)
+        # expander.markdown(f"**{record['Contribution Title']}**")
+        expander.write(f"_Room {record['Room']} - {record['Schedule']}_")
         expander.write(record["Abstract"])
 
     return
