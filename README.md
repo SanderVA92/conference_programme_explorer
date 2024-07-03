@@ -1,7 +1,7 @@
 # EURO2024 conference programme explorer
 _Material initially developed as part of a `streamlit` tutorial at the [EURO conference in Copenhagen](https://euro2024cph.dk/)_
 
-- Check the final result here: [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)]([https://calendar-component.streamlit.app/](https://tinyurl.com/EURO2024-streamlit))
+- Check the final result here: [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://conference-programme-explorer-demo.streamlit.app/)
 - Original presentation can be found [here](https://github.com/SanderVA92/conference_programme_explorer/blob/sidebar_view/docs/MAI%20at%20EURO%202024%20-%20Streamlit.pdf)
 - Feedback, or want to get in touch? [![Linkedin](https://i.sstatic.net/gVE0j.png) LinkedIn](https://www.linkedin.com/in/sander-van-aken/)
 
